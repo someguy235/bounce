@@ -1,34 +1,33 @@
-type SortableItem = {
-  value: number;
-  height: number;
-  tone: string;
-  color: string;
-};
+import * as Tone from "tone";
+import { SortableItem } from "../types/types";
 
 type SortAreaProps = {
   algorithm: string;
+  items: SortableItem[];
+  sort: Function;
 };
-const SortArea = ({ algorithm }: SortAreaProps) => {
-  // create array of unique random numbers from 1 to 100
-  const bars = [];
-  while (bars.length < 100) {
-    const r = Math.floor(Math.random() * 100) + 1;
-    if (bars.indexOf(r) === -1) bars.push(r);
-  }
-
+const SortArea = ({ algorithm, items, sort }: SortAreaProps) => {
+  const synth = new Tone.Synth().toDestination();
   return (
     <div className="my-2 w-full border-2">
-      {/* <div className="w-full">SortArea: {algorithm}</div> */}
       <div className="flex w-full items-end">
-        {bars.map((height: number) => (
+        {items.map((item) => (
           <span
-            style={{ height: `${height * 3}px` }}
-            className={`m-px flex-1 bg-blue-500`}
+            key={item.value}
+            style={{
+              height: `${item.value * 3}px`,
+              backgroundColor: `rgb(${item.color.r}, ${item.color.g}, ${item.color.b})`,
+            }}
+            className={`m-px flex-1`}
+            onClick={() => {
+              synth.triggerAttackRelease(item.tone, "8n");
+            }}
           >
             &nbsp;
           </span>
         ))}
       </div>
+      <button onClick={() => sort()}>Sort</button>
     </div>
   );
 };
