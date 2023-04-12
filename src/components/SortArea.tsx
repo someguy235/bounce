@@ -17,9 +17,11 @@ const SortArea = ({ algorithm, items, sort }: SortAreaProps) => {
             style={{
               height: `${item.value * 3}px`,
               backgroundColor: `rgb(${item.color.r}, ${item.color.g}, ${item.color.b})`,
+              color: "red",
             }}
             className={`m-px flex-1`}
             onClick={() => {
+              console.log(item.value);
               synth.triggerAttackRelease(item.tone, "8n");
             }}
           >

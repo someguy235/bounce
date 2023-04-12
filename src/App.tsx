@@ -7,13 +7,13 @@ import SortArea from "./components/SortArea";
 function App() {
   const [algorithm, setAlgorithm] = useState("quick");
   const [items, setItems] = useState<SortableItem[]>([]);
-
+  const ITEM_SIZE = 100;
   // create array of unique random numbers from 1 to 100
   useEffect(() => {
     const newItems: SortableItem[] = [];
     const count: number[] = [];
-    while (count.length < 100) {
-      const r = Math.floor(Math.random() * 100) + 1;
+    while (count.length < ITEM_SIZE) {
+      const r = Math.floor(Math.random() * ITEM_SIZE) + 1;
       if (count.indexOf(r) === -1) {
         count.push(r);
         newItems.push({
@@ -35,7 +35,7 @@ function App() {
     switch (algorithm) {
       case "quick":
         console.log("quick sort");
-        quickSort(newItems, 0, newItems.length - 1);
+        quickSort(newItems, 0, newItems.length - 1, setItems);
       case "bubble":
         console.log("bubble sort");
         break;
