@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as Tone from "tone";
 import { quickSort } from "./algos";
 import { SortableItem } from "./types/types";
 import AlgorithmSelect from "./components/AlgorithmSelect";
@@ -32,6 +33,8 @@ function App() {
 
   const sort = () => {
     const newItems = [...items];
+    const synth = new Tone.Synth().toDestination();
+
     switch (algorithm) {
       case "quick":
         console.log("quick sort");
