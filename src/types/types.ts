@@ -6,4 +6,9 @@ export type SortableItem = {
     g: number;
     b: number;
   };
+  defaultColor: {
+    r: number;
+    g: number;
+    b: number;
+  };
 };

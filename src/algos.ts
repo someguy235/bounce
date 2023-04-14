@@ -9,30 +9,42 @@ const swap = async (
   setItems: Function
 ) => {
   return new Promise((resolve) => {
-    setItems([...items]);
+    if (i === j) resolve(0);
     setTimeout(() => {
       const item = items[i];
       items[i] = items[j];
       items[j] = item;
-      synth.triggerAttackRelease(items[j].tone, "8n");
+      //   synth.triggerAttackRelease(items[i].tone, "16n");
       setItems([...items]);
       resolve(0);
-    }, 100);
+    }, 250);
   });
 };
 
-const resetColors = (items: SortableItem[], setItems: Function) => {
-  const newItems = items.map((item) => {
-    return {
-      ...item,
-      color: {
-        r: 0 + item.value * 2,
-        g: 0,
-        b: 200 - item.value * 2,
-      },
-    };
-  });
-  setItems([...newItems]);
+export const bubbleSort = async (items: SortableItem[], setItems: Function) => {
+  for (let i = 0; i < items.length; i++) {
+    for (let j = 0; j < items.length - i - 1; j++) {
+      if (items[j].value > items[j + 1].value) {
+        await swap(items, j, j + 1, setItems);
+      }
+    }
+  }
+};
+
+export const insertionSort = async (
+  items: SortableItem[],
+  setItems: Function
+) => {
+  for (let i = 1; i < items.length; i++) {
+    let j = i - 1;
+    let temp = items[i];
+    while (j >= 0 && items[j].value > temp.value) {
+      items[j + 1] = items[j];
+      j--;
+    }
+    items[j + 1] = temp;
+    setItems([...items]);
+  }
 };
 
 export const quickSort = async (
@@ -46,9 +58,11 @@ export const quickSort = async (
   }
 
   const pivot = items[end];
-  pivot.color = { r: 100, g: 200, b: 100 };
-  let pivotPos = start - 1;
 
+  pivot.color = { r: 100, g: 200, b: 100 };
+  setItems([...items]);
+
+  let pivotPos = start - 1;
   for (let i = start; i < end; i++) {
     if (items[i].value < pivot.value) {
       pivotPos++;
@@ -59,13 +73,24 @@ export const quickSort = async (
   pivotPos++;
   await swap(items, end, pivotPos, setItems);
 
-  pivot.color = {
-    r: 0 + pivot.value * 2,
-    g: 0,
-    b: 200 - pivot.value * 2,
-  };
+  pivot.color = pivot.defaultColor;
   setItems([...items]);
 
   await quickSort(items, start, pivotPos - 1, setItems);
   await quickSort(items, pivotPos + 1, end, setItems);
+};
+
+export const selectionSort = async (
+  items: SortableItem[],
+  setItems: Function
+) => {
+  for (let i = 0; i < items.length; i++) {
+    let min = i;
+    for (let j = i + 1; j < items.length; j++) {
+      if (items[j].value < items[min].value) {
+        min = j;
+      }
+    }
+    await swap(items, i, min, setItems);
+  }
 };
