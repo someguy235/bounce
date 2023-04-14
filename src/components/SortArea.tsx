@@ -1,13 +1,13 @@
 import * as Tone from "tone";
+import { Button } from "@chakra-ui/react";
 import { Flipper, Flipped } from "react-flip-toolkit";
 import { SortableItem } from "../types/types";
 
 type SortAreaProps = {
-  algorithm: string;
   items: SortableItem[];
   sort: Function;
 };
-const SortArea = ({ algorithm, items, sort }: SortAreaProps) => {
+const SortArea = ({ items, sort }: SortAreaProps) => {
   const synth = new Tone.Synth().toDestination();
   return (
     <div className="my-2 w-full">
@@ -34,7 +34,15 @@ const SortArea = ({ algorithm, items, sort }: SortAreaProps) => {
           ))}
         </div>
       </Flipper>
-      <button onClick={() => sort()}>Sort</button>
+      <Button m={2} onClick={() => sort()}>
+        Sort
+      </Button>
+      <Button m={2} onClick={() => sort()}>
+        Stop
+      </Button>
+      <Button m={2} onClick={() => sort()}>
+        Reset
+      </Button>
     </div>
   );
 };
