@@ -16,7 +16,7 @@ function App() {
   const [sorting, setSorting] = useState(false);
 
   // create array of unique random numbers from 1 to itemSize
-  useEffect(() => {
+  const reset = () => {
     const newItems: SortableItem[] = [];
     const count: number[] = [];
     while (count.length < itemSize) {
@@ -40,46 +40,69 @@ function App() {
       }
     }
     setItems(newItems);
+  };
+
+  useEffect(() => {
+    reset();
   }, [itemSize]);
 
-  const sort = () => {
+  const sort = async () => {
+    setSorting(true);
     switch (algorithm) {
       case "quick":
         console.log("quick sort");
-        quickSort(items, 0, items.length - 1, setItems, sortSpeed);
+        await quickSort(items, 0, items.length - 1, setItems, sortSpeed);
         break;
       case "bubble":
         console.log("bubble sort");
-        bubbleSort(items, setItems, sortSpeed);
+        await bubbleSort(items, setItems, sortSpeed);
         break;
       case "insertion":
         console.log("insertion sort");
-        insertionSort(items, setItems, sortSpeed);
+        await insertionSort(items, setItems, sortSpeed);
         break;
       case "selection":
         console.log("selection sort");
-        selectionSort(items, setItems, sortSpeed);
+        await selectionSort(items, setItems, sortSpeed);
         break;
       default:
         console.log("no sort");
     }
+    setSorting(false);
   };
 
   return (
-    <div className="w-full">
-      <SortArea items={items} sort={sort} />
-      <Grid templateColumns={"1fr 1fr 1fr"} alignItems={"center"}>
-        <GridItem>
-          <ItemCountSelect itemSize={itemSize} setItemSize={setItemSize} />
-        </GridItem>
-        <GridItem>
-          <AlgorithmSelect algorithm={algorithm} setAlgorithm={setAlgorithm} />
-        </GridItem>
-        <GridItem>
-          <SortSpeedSelect sortSpeed={sortSpeed} setSortSpeed={setSortSpeed} />
-        </GridItem>
-      </Grid>
-    </div>
+    <Grid templateRows={"1fr 1fr 1fr"}>
+      <GridItem></GridItem>
+      <GridItem>
+        <div className="w-full">
+          <SortArea items={items} sort={sort} reset={reset} sorting={sorting} />
+          <Grid templateColumns={"1fr 1fr 1fr"} alignItems={"center"} gap={4}>
+            <GridItem>
+              <ItemCountSelect
+                itemSize={itemSize}
+                setItemSize={setItemSize}
+                sorting={sorting}
+              />
+            </GridItem>
+            <GridItem>
+              <AlgorithmSelect
+                algorithm={algorithm}
+                setAlgorithm={setAlgorithm}
+              />
+            </GridItem>
+            <GridItem>
+              <SortSpeedSelect
+                sortSpeed={sortSpeed}
+                setSortSpeed={setSortSpeed}
+                sorting={sorting}
+              />
+            </GridItem>
+          </Grid>
+        </div>
+      </GridItem>
+      <GridItem></GridItem>
+    </Grid>
   );
 }
 
