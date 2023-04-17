@@ -3,11 +3,20 @@ import { Select } from "@chakra-ui/react";
 type AlgorithmSelectProps = {
   algorithm: string;
   setAlgorithm: Function;
+  sorting: boolean;
 };
-const AlgorithmSelect = ({ algorithm, setAlgorithm }: AlgorithmSelectProps) => {
+const AlgorithmSelect = ({
+  algorithm,
+  setAlgorithm,
+  sorting,
+}: AlgorithmSelectProps) => {
   return (
     <div className="m-2">
-      <Select value={algorithm} onChange={(e) => setAlgorithm(e.target.value)}>
+      <Select
+        value={algorithm}
+        onChange={(e) => setAlgorithm(e.target.value)}
+        isDisabled={sorting}
+      >
         <option value="quick">Quick</option>
         <option value="bubble">Bubble</option>
         <option value="insertion">Insertion</option>

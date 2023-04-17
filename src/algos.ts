@@ -1,8 +1,9 @@
 import { SortableItem } from "./types/types";
+import { globalSorting } from "./App";
 import * as Tone from "tone";
 const synth = new Tone.Synth().toDestination();
 
-const swap = async (
+export const swap = async (
   items: SortableItem[],
   i: number,
   j: number,
@@ -44,6 +45,8 @@ export const insertionSort = async (
   for (let i = 1; i < items.length; i++) {
     let j = i - 1;
     let temp = items[i];
+    // items[i].value = 0;
+    // setItems([...items]);
     while (j >= 0 && items[j].value > temp.value) {
       items[j + 1] = items[j];
       j--;
@@ -63,9 +66,6 @@ export const quickSort = async (
   if (start >= end || start < 0 || end >= items.length) {
     return;
   }
-
-  console.log("sortSpeed", sortSpeed);
-
   const pivot = items[end];
 
   pivot.color = { r: 100, g: 200, b: 100 };
@@ -73,6 +73,7 @@ export const quickSort = async (
 
   let pivotPos = start - 1;
   for (let i = start; i < end; i++) {
+    if (!globalSorting) return;
     if (items[i].value < pivot.value) {
       pivotPos++;
       await swap(items, i, pivotPos, setItems, sortSpeed);
@@ -85,6 +86,7 @@ export const quickSort = async (
   pivot.color = pivot.defaultColor;
   setItems([...items]);
 
+  if (!globalSorting) return;
   await quickSort(items, start, pivotPos - 1, setItems, sortSpeed);
   await quickSort(items, pivotPos + 1, end, setItems, sortSpeed);
 };

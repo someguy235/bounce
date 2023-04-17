@@ -7,11 +7,18 @@ type SortAreaProps = {
   sort: Function;
   reset: Function;
   sorting: boolean;
+  setSorting: Function;
 };
-const SortArea = ({ items, sort, reset, sorting }: SortAreaProps) => {
+const SortArea = ({
+  items,
+  sort,
+  reset,
+  sorting,
+  setSorting,
+}: SortAreaProps) => {
   return (
     <div className="my-2 w-full">
-      <Flipper flipKey={items}>
+      <Flipper flipKey={items} staggerConfig={{ default: { speed: 0.01 } }}>
         <div className="flex w-full items-end border-2">
           {items.map((item) => (
             <Flipped flipId={item.value} key={item.value}>
@@ -30,10 +37,16 @@ const SortArea = ({ items, sort, reset, sorting }: SortAreaProps) => {
           ))}
         </div>
       </Flipper>
-      <Button m={2} onClick={() => sort()} isDisabled={sorting}>
+      <Button m={2} onClick={() => setSorting(true)} isDisabled={sorting}>
         Sort
       </Button>
-      <Button m={2} onClick={() => sort()} isDisabled={!sorting}>
+      <Button
+        m={2}
+        onClick={() => {
+          setSorting(false);
+        }}
+        isDisabled={!sorting}
+      >
         Stop
       </Button>
       <Button m={2} onClick={() => reset()} isDisabled={sorting}>

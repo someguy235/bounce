@@ -8,6 +8,9 @@ import ItemCountSelect from "./components/ItemCountSelect";
 import SortSpeedSelect from "./components/SortSpeedSelect";
 import SortArea from "./components/SortArea";
 
+// hack for enabling canceling of sorting with async functions
+export let globalSorting = false;
+
 function App() {
   const [algorithm, setAlgorithm] = useState("quick");
   const [items, setItems] = useState<SortableItem[]>([]);
@@ -46,27 +49,29 @@ function App() {
     reset();
   }, [itemSize]);
 
+  useEffect(() => {
+    globalSorting = sorting;
+    if (sorting) {
+      sort();
+    }
+  }, [sorting]);
+
   const sort = async () => {
-    setSorting(true);
     switch (algorithm) {
       case "quick":
-        console.log("quick sort");
         await quickSort(items, 0, items.length - 1, setItems, sortSpeed);
         break;
       case "bubble":
-        console.log("bubble sort");
         await bubbleSort(items, setItems, sortSpeed);
         break;
       case "insertion":
-        console.log("insertion sort");
         await insertionSort(items, setItems, sortSpeed);
         break;
       case "selection":
-        console.log("selection sort");
         await selectionSort(items, setItems, sortSpeed);
         break;
       default:
-        console.log("no sort");
+      // console.log("no sort");
     }
     setSorting(false);
   };
@@ -76,7 +81,13 @@ function App() {
       <GridItem></GridItem>
       <GridItem>
         <div className="w-full">
-          <SortArea items={items} sort={sort} reset={reset} sorting={sorting} />
+          <SortArea
+            items={items}
+            sort={sort}
+            reset={reset}
+            sorting={sorting}
+            setSorting={setSorting}
+          />
           <Grid templateColumns={"1fr 1fr 1fr"} alignItems={"center"} gap={4}>
             <GridItem>
               <ItemCountSelect
@@ -89,6 +100,7 @@ function App() {
               <AlgorithmSelect
                 algorithm={algorithm}
                 setAlgorithm={setAlgorithm}
+                sorting={sorting}
               />
             </GridItem>
             <GridItem>
