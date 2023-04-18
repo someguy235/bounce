@@ -1,5 +1,5 @@
 import { SortableItem } from "./types/types";
-import { globalSorting } from "./App";
+import { globalSorting, globalTempItem } from "./App";
 import * as Tone from "tone";
 const synth = new Tone.Synth().toDestination();
 
@@ -23,6 +23,44 @@ export const swap = async (
   });
 };
 
+export const swapTempVal = async (
+  position: number,
+  items: SortableItem[],
+  setItems: Function,
+  setTempItem: Function,
+  sortSpeed: number
+) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const rTemp = <SortableItem>{ ...globalTempItem };
+      console.log("rTemp", rTemp);
+      console.log("items[position]", items[position]);
+      setTempItem({ ...items[position] });
+
+      items[position] = rTemp;
+      setItems([...items]);
+
+      resolve(0);
+    }, sortSpeed * 3);
+  });
+};
+
+export const setColor = async (
+  item: SortableItem,
+  color: { r: number; g: number; b: number },
+  items: SortableItem[],
+  setItems: Function,
+  sortSpeed: number
+) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      item.color = color;
+      setItems([...items]);
+      resolve(0);
+    }, sortSpeed);
+  });
+};
+
 export const bubbleSort = async (
   items: SortableItem[],
   setItems: Function,
@@ -40,19 +78,28 @@ export const bubbleSort = async (
 export const insertionSort = async (
   items: SortableItem[],
   setItems: Function,
+  setTempItem: Function,
   sortSpeed: number
 ) => {
+  if (!items || items.length == 0) return;
   for (let i = 1; i < items.length; i++) {
+    if (!globalSorting) return;
     let j = i - 1;
-    let temp = items[i];
-    // items[i].value = 0;
-    // setItems([...items]);
-    while (j >= 0 && items[j].value > temp.value) {
-      items[j + 1] = items[j];
+    let tempVal = items[i]?.value;
+    if (!tempVal) return;
+
+    await swapTempVal(i, items, setItems, setTempItem, sortSpeed);
+
+    while (j >= 0 && items[j]!.value > tempVal) {
+      if (!globalSorting) {
+        await swapTempVal(j + 1, items, setItems, setTempItem, sortSpeed);
+        return;
+      }
+      await swap(items, j, j + 1, setItems, sortSpeed);
       j--;
     }
-    items[j + 1] = temp;
-    setItems([...items]);
+
+    await swapTempVal(j + 1, items, setItems, setTempItem, sortSpeed);
   }
 };
 
@@ -68,8 +115,7 @@ export const quickSort = async (
   }
   const pivot = items[end];
 
-  pivot.color = { r: 100, g: 200, b: 100 };
-  setItems([...items]);
+  await setColor(pivot, { r: 100, g: 200, b: 100 }, items, setItems, sortSpeed);
 
   let pivotPos = start - 1;
   for (let i = start; i < end; i++) {
@@ -83,8 +129,7 @@ export const quickSort = async (
   pivotPos++;
   await swap(items, end, pivotPos, setItems, sortSpeed);
 
-  pivot.color = pivot.defaultColor;
-  setItems([...items]);
+  await setColor(pivot, pivot.defaultColor, items, setItems, sortSpeed);
 
   if (!globalSorting) return;
   await quickSort(items, start, pivotPos - 1, setItems, sortSpeed);

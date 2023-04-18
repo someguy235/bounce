@@ -10,6 +10,12 @@ import SortArea from "./components/SortArea";
 
 // hack for enabling canceling of sorting with async functions
 export let globalSorting = false;
+export let globalTempItem: SortableItem = {
+  value: 0,
+  tone: 0,
+  color: { r: 0, g: 0, b: 0 },
+  defaultColor: { r: 0, g: 0, b: 0 },
+};
 
 function App() {
   const [algorithm, setAlgorithm] = useState("quick");
@@ -17,6 +23,12 @@ function App() {
   const [itemSize, setItemSize] = useState(30);
   const [sortSpeed, setSortSpeed] = useState(100);
   const [sorting, setSorting] = useState(false);
+  const [tempItem, setTempItem] = useState<SortableItem>({
+    value: 0,
+    tone: 0,
+    color: { r: 0, g: 0, b: 0 },
+    defaultColor: { r: 0, g: 0, b: 0 },
+  });
 
   // create array of unique random numbers from 1 to itemSize
   const reset = () => {
@@ -56,6 +68,10 @@ function App() {
     }
   }, [sorting]);
 
+  useEffect(() => {
+    globalTempItem = tempItem;
+  }, [tempItem]);
+
   const sort = async () => {
     switch (algorithm) {
       case "quick":
@@ -65,7 +81,7 @@ function App() {
         await bubbleSort(items, setItems, sortSpeed);
         break;
       case "insertion":
-        await insertionSort(items, setItems, sortSpeed);
+        await insertionSort(items, setItems, setTempItem, sortSpeed);
         break;
       case "selection":
         await selectionSort(items, setItems, sortSpeed);
@@ -82,8 +98,9 @@ function App() {
       <GridItem>
         <div className="w-full">
           <SortArea
+            algorithm={algorithm}
             items={items}
-            sort={sort}
+            tempItem={tempItem}
             reset={reset}
             sorting={sorting}
             setSorting={setSorting}
