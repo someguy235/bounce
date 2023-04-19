@@ -20,7 +20,7 @@ const SortArea = ({
 }: SortAreaProps) => {
   const tempItemArea =
     algorithm == "insertion" ? (
-      <div className="m-px mr-2 flex flex-1 items-end self-stretch border-l-2 border-r-2 border-dashed">
+      <div className="m-px mr-4 flex flex-1 items-end self-stretch border-l-2 border-r-2 border-dashed">
         <Flipped flipId={tempItem.value} key={tempItem.value}>
           <span
             key={tempItem.value}

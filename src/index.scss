@@ -2,7 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  height: 100%;
+}
 #root {
+  height: 100%;
+  display: grid;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -37,7 +42,8 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
+  display: grid;
+  grid-template-rows: 1fr;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;

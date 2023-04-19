@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Grid, GridItem } from "@chakra-ui/react";
+import { Grid, GridItem, List, ListIcon, ListItem } from "@chakra-ui/react";
 
 import { bubbleSort, insertionSort, quickSort, selectionSort } from "./algos";
 import { SortableItem } from "./types/types";
@@ -7,6 +7,8 @@ import AlgorithmSelect from "./components/AlgorithmSelect";
 import ItemCountSelect from "./components/ItemCountSelect";
 import SortSpeedSelect from "./components/SortSpeedSelect";
 import SortArea from "./components/SortArea";
+
+import { MdThumbUp, MdThumbsUpDown, MdThumbDown } from "react-icons/md";
 
 // hack for enabling canceling of sorting with async functions
 export let globalSorting = false;
@@ -93,7 +95,7 @@ function App() {
   };
 
   return (
-    <Grid templateRows={"1fr 1fr 1fr"}>
+    <Grid templateRows={"2fr 5fr 5fr"}>
       <GridItem></GridItem>
       <GridItem>
         <div className="w-full">
@@ -130,7 +132,46 @@ function App() {
           </Grid>
         </div>
       </GridItem>
-      <GridItem></GridItem>
+      <GridItem>
+        <div className="mt-4 w-full">
+          <div className="">
+            <h3 className="text-gray-500">Quick Sort</h3>
+            <p className="text-gray-500">
+              <a
+                href="https://en.wikipedia.org/wiki/Quicksort"
+                rel="noreferer"
+                target="_blank"
+              >
+                Quicksort
+              </a>{" "}
+              is a divide-and-conquer algorithm. It works by selecting a 'pivot'
+              element from the array and partitioning the other elements into
+              two sub-arrays, according to whether they are less than or greater
+              than the pivot. For this reason, it is sometimes called
+              partition-exchange sort. The sub-arrays are then sorted
+              recursively. This can be done in-place, requiring small additional
+              amounts of memory to perform the sorting.
+            </p>
+            <List>
+              <ListItem style={{ display: "inline-block" }}>
+                <ListIcon as={MdThumbsUpDown} color="green.500" />
+                Avg O(n log n)
+              </ListItem>
+              <ListItem style={{ display: "inline-block" }}>
+                <ListIcon as={MdThumbDown} color="green.500" />
+                Worst O(n^2)
+              </ListItem>
+              <ListItem style={{ display: "inline-block" }}>
+                <ListIcon as={MdThumbUp} color="green.500" />
+                Best O(n log n)
+              </ListItem>
+              <ListItem style={{ display: "inline-block" }}>
+                Space O(log n)
+              </ListItem>
+            </List>
+          </div>
+        </div>
+      </GridItem>
     </Grid>
   );
 }
