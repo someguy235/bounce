@@ -1,5 +1,22 @@
 import { useEffect, useState } from "react";
-import { Grid, GridItem, List, ListIcon, ListItem } from "@chakra-ui/react";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Divider,
+  Flex,
+  Grid,
+  GridItem,
+  Heading,
+  Icon,
+  Link,
+  List,
+  ListIcon,
+  ListItem,
+  Text,
+} from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 import { bubbleSort, insertionSort, quickSort, selectionSort } from "./algos";
 import { SortableItem } from "./types/types";
@@ -9,6 +26,7 @@ import SortSpeedSelect from "./components/SortSpeedSelect";
 import SortArea from "./components/SortArea";
 
 import { MdThumbUp, MdThumbsUpDown, MdThumbDown } from "react-icons/md";
+import { GrStorage } from "react-icons/gr";
 
 // hack for enabling canceling of sorting with async functions
 export let globalSorting = false;
@@ -134,42 +152,68 @@ function App() {
       </GridItem>
       <GridItem>
         <div className="mt-4 w-full">
-          <div className="">
-            <h3 className="text-gray-500">Quick Sort</h3>
-            <p className="text-gray-500">
-              <a
-                href="https://en.wikipedia.org/wiki/Quicksort"
-                rel="noreferer"
-                target="_blank"
-              >
-                Quicksort
-              </a>{" "}
-              is a divide-and-conquer algorithm. It works by selecting a 'pivot'
-              element from the array and partitioning the other elements into
-              two sub-arrays, according to whether they are less than or greater
-              than the pivot. For this reason, it is sometimes called
-              partition-exchange sort. The sub-arrays are then sorted
-              recursively. This can be done in-place, requiring small additional
-              amounts of memory to perform the sorting.
-            </p>
-            <List>
-              <ListItem style={{ display: "inline-block" }}>
-                <ListIcon as={MdThumbsUpDown} color="green.500" />
-                Avg O(n log n)
-              </ListItem>
-              <ListItem style={{ display: "inline-block" }}>
-                <ListIcon as={MdThumbDown} color="green.500" />
-                Worst O(n^2)
-              </ListItem>
-              <ListItem style={{ display: "inline-block" }}>
-                <ListIcon as={MdThumbUp} color="green.500" />
-                Best O(n log n)
-              </ListItem>
-              <ListItem style={{ display: "inline-block" }}>
-                Space O(log n)
-              </ListItem>
-            </List>
-          </div>
+          <Card>
+            <CardBody>
+              <CardHeader>
+                <Heading>Quick Sort</Heading>
+              </CardHeader>
+              <CardBody>
+                <Text>
+                  <Link
+                    href="https://en.wikipedia.org/wiki/Quicksort"
+                    isExternal
+                  >
+                    Quicksort <ExternalLinkIcon mx="2px" />
+                  </Link>{" "}
+                  is a divide-and-conquer algorithm. It works by selecting a
+                  'pivot' element from the array and partitioning the other
+                  elements into two sub-arrays, according to whether they are
+                  less than or greater than the pivot. For this reason, it is
+                  sometimes called partition-exchange sort. The sub-arrays are
+                  then sorted recursively. This can be done in-place, requiring
+                  small additional amounts of memory to perform the sorting.
+                </Text>
+              </CardBody>
+              <Divider />
+              <CardFooter alignContent={"center"} pb={0}>
+                <Grid
+                  templateColumns="1fr 1fr 1fr 1fr"
+                  gap={4}
+                  w="100%"
+                  h="100%"
+                >
+                  <Flex justifyContent={"center"} alignItems={"center"} gap={2}>
+                    <Icon
+                      title="average complexity"
+                      as={MdThumbsUpDown}
+                      color="grey.500"
+                    />
+                    <Text>O(n log n)</Text>
+                  </Flex>
+                  <Flex justifyContent={"center"} alignItems={"center"} gap={2}>
+                    <Icon
+                      title="best case complexity"
+                      as={MdThumbUp}
+                      color="grey.500"
+                    />
+                    <Text>O(n log n)</Text>
+                  </Flex>
+                  <Flex justifyContent={"center"} alignItems={"center"} gap={2}>
+                    <Icon
+                      title="worst case complexity"
+                      as={MdThumbDown}
+                      color="grey.500"
+                    />
+                    <Text>O(n^2)</Text>
+                  </Flex>
+                  <Flex justifyContent={"center"} alignItems={"center"} gap={2}>
+                    <Icon title="space" as={GrStorage} color="grey.500" />
+                    <Text>O(log n)</Text>
+                  </Flex>
+                </Grid>
+              </CardFooter>
+            </CardBody>
+          </Card>
         </div>
       </GridItem>
     </Grid>
