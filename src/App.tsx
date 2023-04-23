@@ -1,22 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Divider,
-  Flex,
-  Grid,
-  GridItem,
-  Heading,
-  Icon,
-  Link,
-  List,
-  ListIcon,
-  ListItem,
-  Text,
-} from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { Grid, GridItem } from "@chakra-ui/react";
 
 import { bubbleSort, insertionSort, quickSort, selectionSort } from "./algos";
 import { SortableItem } from "./types/types";
@@ -24,9 +7,7 @@ import AlgorithmSelect from "./components/AlgorithmSelect";
 import ItemCountSelect from "./components/ItemCountSelect";
 import SortSpeedSelect from "./components/SortSpeedSelect";
 import SortArea from "./components/SortArea";
-
-import { MdThumbUp, MdThumbsUpDown, MdThumbDown } from "react-icons/md";
-import { GrStorage } from "react-icons/gr";
+import InfoCard from "./components/InfoCard";
 
 // hack for enabling canceling of sorting with async functions
 export let globalSorting = false;
@@ -152,68 +133,7 @@ function App() {
       </GridItem>
       <GridItem>
         <div className="mt-4 w-full">
-          <Card>
-            <CardBody>
-              <CardHeader>
-                <Heading>Quick Sort</Heading>
-              </CardHeader>
-              <CardBody>
-                <Text>
-                  <Link
-                    href="https://en.wikipedia.org/wiki/Quicksort"
-                    isExternal
-                  >
-                    Quicksort <ExternalLinkIcon mx="2px" />
-                  </Link>{" "}
-                  is a divide-and-conquer algorithm. It works by selecting a
-                  'pivot' element from the array and partitioning the other
-                  elements into two sub-arrays, according to whether they are
-                  less than or greater than the pivot. For this reason, it is
-                  sometimes called partition-exchange sort. The sub-arrays are
-                  then sorted recursively. This can be done in-place, requiring
-                  small additional amounts of memory to perform the sorting.
-                </Text>
-              </CardBody>
-              <Divider />
-              <CardFooter alignContent={"center"} pb={0}>
-                <Grid
-                  templateColumns="1fr 1fr 1fr 1fr"
-                  gap={4}
-                  w="100%"
-                  h="100%"
-                >
-                  <Flex justifyContent={"center"} alignItems={"center"} gap={2}>
-                    <Icon
-                      title="average complexity"
-                      as={MdThumbsUpDown}
-                      color="grey.500"
-                    />
-                    <Text>O(n log n)</Text>
-                  </Flex>
-                  <Flex justifyContent={"center"} alignItems={"center"} gap={2}>
-                    <Icon
-                      title="best case complexity"
-                      as={MdThumbUp}
-                      color="grey.500"
-                    />
-                    <Text>O(n log n)</Text>
-                  </Flex>
-                  <Flex justifyContent={"center"} alignItems={"center"} gap={2}>
-                    <Icon
-                      title="worst case complexity"
-                      as={MdThumbDown}
-                      color="grey.500"
-                    />
-                    <Text>O(n^2)</Text>
-                  </Flex>
-                  <Flex justifyContent={"center"} alignItems={"center"} gap={2}>
-                    <Icon title="space" as={GrStorage} color="grey.500" />
-                    <Text>O(log n)</Text>
-                  </Flex>
-                </Grid>
-              </CardFooter>
-            </CardBody>
-          </Card>
+          <InfoCard algorithm={algorithm} />
         </div>
       </GridItem>
     </Grid>
