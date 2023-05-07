@@ -14,24 +14,9 @@ import {
 } from "@chakra-ui/react";
 import { GrStorage } from "react-icons/gr";
 import { MdThumbDown, MdThumbUp, MdThumbsUpDown } from "react-icons/md";
-import { FaWikipediaW } from "react-icons/fa";
-import { BiTimeFive } from "react-icons/bi";
 import { AlgoInfo } from "../types/types";
 
 const algoInfo: AlgoInfo = {
-  quick: {
-    name: "Quick Sort",
-    description:
-      " is a divide-and-conquer algorithm. It works by selecting a 'pivot' element from the array and partitioning the other elements into two sub-arrays, according to whether they are less than or greater than the pivot. For this reason, it is sometimes called partition-exchange sort. The sub-arrays are then sorted recursively. This can be done in-place, requiring small additional amounts of memory to perform the sorting.",
-    complexity: {
-      average: "O(n log n)",
-      worst: "O(n^2)",
-      best: "O(n log n)",
-      space: "O(log n)",
-    },
-    link: "https://en.wikipedia.org/wiki/Quicksort",
-    stable: false,
-  },
   bubble: {
     name: "Bubble Sort",
     description:
@@ -57,6 +42,32 @@ const algoInfo: AlgoInfo = {
     },
     link: "https://en.wikipedia.org/wiki/Insertion_sort",
     stable: true,
+  },
+  merge: {
+    name: "Merge Sort",
+    description:
+      " is an efficient, general-purpose, comparison-based sorting algorithm. Most implementations produce a stable sort, which means that the order of equal elements is the same in the input and output. Merge sort is a divide and conquer algorithm that was invented by John von Neumann in 1945.",
+    complexity: {
+      average: "O(n log n)",
+      worst: "O(n log n)",
+      best: "O(n log n)",
+      space: "O(n)",
+    },
+    link: "https://en.wikipedia.org/wiki/Merge_sort",
+    stable: true,
+  },
+  quick: {
+    name: "Quick Sort",
+    description:
+      " is a divide-and-conquer algorithm. It works by selecting a 'pivot' element from the array and partitioning the other elements into two sub-arrays, according to whether they are less than or greater than the pivot. For this reason, it is sometimes called partition-exchange sort. The sub-arrays are then sorted recursively. This can be done in-place, requiring small additional amounts of memory to perform the sorting.",
+    complexity: {
+      average: "O(n log n)",
+      worst: "O(n^2)",
+      best: "O(n log n)",
+      space: "O(log n)",
+    },
+    link: "https://en.wikipedia.org/wiki/Quicksort",
+    stable: false,
   },
   selection: {
     name: "Selection Sort",

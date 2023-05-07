@@ -3,7 +3,7 @@ import { globalSorting, globalTempItem } from "./App";
 import * as Tone from "tone";
 const synth = new Tone.Synth().toDestination();
 
-export const swap = async (
+const swap = async (
   items: SortableItem[],
   i: number,
   j: number,
@@ -23,7 +23,7 @@ export const swap = async (
   });
 };
 
-export const swapTempVal = async (
+const swapTempVal = async (
   position: number,
   items: SortableItem[],
   setItems: Function,
@@ -32,15 +32,92 @@ export const swapTempVal = async (
 ) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const rTemp = <SortableItem>{ ...globalTempItem };
-      console.log("rTemp", rTemp);
-      console.log("items[position]", items[position]);
       setTempItem({ ...items[position] });
 
-      items[position] = rTemp;
+      items[position] = <SortableItem>{ ...globalTempItem };
       setItems([...items]);
 
       resolve(0);
+    }, sortSpeed * 3);
+  });
+};
+
+const splitToTempArrays = async (
+  itemsPerArray: number,
+  items: SortableItem[],
+  setItems: Function,
+  setTempItems: Function,
+  sortSpeed: number
+): Promise<SortableItem[][]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      let tempTempItems: SortableItem[][] = [];
+      let tempBaseItems: SortableItem[] = [];
+      for (let i = 0; i < items.length / itemsPerArray; i++) {
+        tempTempItems[i] = [];
+        for (let j = 0; j < itemsPerArray; j++) {
+          tempTempItems[i].push({ ...items[i * itemsPerArray + j] });
+          tempBaseItems[i] = {
+            value: 0,
+            tone: 0,
+            color: {
+              r: 0,
+              g: 0,
+              b: 0,
+            },
+            defaultColor: {
+              r: 0,
+              g: 0,
+              b: 0,
+            },
+          };
+        }
+      }
+      setTempItems(tempTempItems);
+      setItems(tempBaseItems);
+
+      resolve(tempTempItems);
+    }, sortSpeed * 3);
+  });
+};
+
+const mergeFromTempArrays = async (
+  tempItems: SortableItem[][],
+  setItems: Function,
+  setTempItems: Function,
+  sortSpeed: number
+): Promise<SortableItem[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const tempBaseItems: SortableItem[] = [];
+      console.log(tempItems);
+      let j = 0;
+      for (let i = 0; i < tempItems.length; i += 2) {
+        const aList = tempItems[i];
+        const bList = i < tempItems.length - 1 ? tempItems[i + 1] : [];
+        console.log(aList, bList);
+        let a = 0,
+          b = 0;
+        while (a < aList.length && b < bList.length) {
+          if (aList[a].value < bList[b].value) {
+            tempBaseItems[j++] = aList[a++];
+          } else {
+            tempBaseItems[j++] = bList[b++];
+          }
+        }
+        while (a < aList.length) {
+          tempBaseItems[j++] = aList[a++];
+        }
+        while (b < bList.length) {
+          tempBaseItems[j++] = bList[b++];
+        }
+      }
+
+      console.log(tempBaseItems);
+      setItems(tempBaseItems);
+      setTempItems([]);
+
+      resolve(tempBaseItems);
     }, sortSpeed * 3);
   });
 };
@@ -69,6 +146,7 @@ export const bubbleSort = async (
   for (let i = 0; i < items.length; i++) {
     for (let j = 0; j < items.length - i - 1; j++) {
       if (items[j].value > items[j + 1].value) {
+        if (!globalSorting) return;
         await swap(items, j, j + 1, setItems, sortSpeed);
       }
     }
@@ -101,6 +179,25 @@ export const insertionSort = async (
 
     await swapTempVal(j + 1, items, setItems, setTempItem, sortSpeed);
   }
+};
+
+export const mergeSort = async (
+  items: SortableItem[],
+  setItems: Function,
+  tempItems: SortableItem[][],
+  setTempItems: Function,
+  sortSpeed: number
+) => {
+  console.log(tempItems);
+  const tempTempItems = await splitToTempArrays(
+    1,
+    items,
+    setItems,
+    setTempItems,
+    sortSpeed
+  );
+  console.log(tempTempItems);
+  await mergeFromTempArrays(tempTempItems, setItems, setTempItems, sortSpeed);
 };
 
 export const quickSort = async (

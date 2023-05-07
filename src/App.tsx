@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { Grid, GridItem } from "@chakra-ui/react";
 
-import { bubbleSort, insertionSort, quickSort, selectionSort } from "./algos";
+import {
+  bubbleSort,
+  insertionSort,
+  mergeSort,
+  quickSort,
+  selectionSort,
+} from "./algos";
 import { SortableItem } from "./types/types";
 import AlgorithmSelect from "./components/AlgorithmSelect";
 import ItemCountSelect from "./components/ItemCountSelect";
@@ -19,7 +25,7 @@ export let globalTempItem: SortableItem = {
 };
 
 function App() {
-  const [algorithm, setAlgorithm] = useState("quick");
+  const [algorithm, setAlgorithm] = useState("merge");
   const [items, setItems] = useState<SortableItem[]>([]);
   const [itemSize, setItemSize] = useState(30);
   const [sortSpeed, setSortSpeed] = useState(100);
@@ -30,10 +36,12 @@ function App() {
     color: { r: 0, g: 0, b: 0 },
     defaultColor: { r: 0, g: 0, b: 0 },
   });
+  const [tempItems, setTempItems] = useState<SortableItem[][]>([]);
 
   // create array of unique random numbers from 1 to itemSize
   const reset = () => {
     const newItems: SortableItem[] = [];
+    const newTempItems: SortableItem[] = [];
     const count: number[] = [];
     while (count.length < itemSize) {
       const r = Math.floor(Math.random() * itemSize) + 1;
@@ -53,9 +61,24 @@ function App() {
             b: 200 - r * (200 / itemSize),
           },
         });
+        newTempItems.push({
+          value: itemSize,
+          tone: 240 + r * 4,
+          color: {
+            r: 255,
+            g: 255,
+            b: 255,
+          },
+          defaultColor: {
+            r: 0 + r * (255 / itemSize),
+            g: 0,
+            b: 200 - r * (200 / itemSize),
+          },
+        });
       }
     }
     setItems(newItems);
+    setTempItems([newTempItems]);
   };
 
   useEffect(() => {
@@ -75,14 +98,17 @@ function App() {
 
   const sort = async () => {
     switch (algorithm) {
-      case "quick":
-        await quickSort(items, 0, items.length - 1, setItems, sortSpeed);
-        break;
       case "bubble":
         await bubbleSort(items, setItems, sortSpeed);
         break;
       case "insertion":
         await insertionSort(items, setItems, setTempItem, sortSpeed);
+        break;
+      case "merge":
+        await mergeSort(items, setItems, tempItems, setTempItems, sortSpeed);
+        break;
+      case "quick":
+        await quickSort(items, 0, items.length - 1, setItems, sortSpeed);
         break;
       case "selection":
         await selectionSort(items, setItems, sortSpeed);
@@ -102,6 +128,7 @@ function App() {
             algorithm={algorithm}
             items={items}
             tempItem={tempItem}
+            tempItems={tempItems}
             reset={reset}
             sorting={sorting}
             setSorting={setSorting}

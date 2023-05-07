@@ -17,9 +17,10 @@ const AlgorithmSelect = ({
         onChange={(e) => setAlgorithm(e.target.value)}
         isDisabled={sorting}
       >
-        <option value="quick">Quick</option>
         <option value="bubble">Bubble</option>
         <option value="insertion">Insertion</option>
+        <option value="merge">Merge</option>
+        <option value="quick">Quick</option>
         <option value="selection">Selection</option>
       </Select>
     </div>
