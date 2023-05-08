@@ -6,7 +6,8 @@ type SortAreaProps = {
   algorithm: string;
   items: SortableItem[];
   tempItem: SortableItem;
-  tempItems: SortableItem[][];
+  tempItemsTop: SortableItem[][];
+  tempItemsBottom: SortableItem[][];
   reset: Function;
   sorting: boolean;
   setSorting: Function;
@@ -15,7 +16,8 @@ const SortArea = ({
   algorithm,
   items,
   tempItem,
-  tempItems,
+  tempItemsTop,
+  tempItemsBottom,
   reset,
   sorting,
   setSorting,
@@ -40,14 +42,45 @@ const SortArea = ({
       </div>
     ) : null;
 
-  // console.log(tempItems);
-  const tempItemsArea =
+  // TODO: make these a component
+  // TODO: remove border if empty
+  const tempItemsTopArea =
     algorithm == "merge" ? (
       <div
         className="flex w-full items-end border-2"
         style={{ height: "150px" }}
       >
-        {tempItems.map((itemGroup, i) => (
+        {tempItemsTop.map((itemGroup, i) => (
+          <div
+            className="mx-2 flex h-full flex-1 items-end border-2 border-dashed"
+            key={i}
+          >
+            {itemGroup.map((item, j) => (
+              <Flipped flipId={item.value} key={i + ":" + j}>
+                <span
+                  className="m-px flex-1"
+                  style={{
+                    height: `${item.value * (142 / items.length)}px`,
+                    backgroundColor: `rgb(${item.color.r}, ${item.color.g}, ${item.color.b})`,
+                    color: "red",
+                  }}
+                >
+                  &nbsp;
+                </span>
+              </Flipped>
+            ))}
+          </div>
+        ))}
+      </div>
+    ) : null;
+
+  const tempItemsBottomArea =
+    algorithm == "merge" ? (
+      <div
+        className="flex w-full items-end border-2"
+        style={{ height: "150px" }}
+      >
+        {tempItemsBottom.map((itemGroup, i) => (
           <div
             className="mx-2 flex h-full flex-1 items-end border-2 border-dashed"
             key={i}
@@ -74,7 +107,8 @@ const SortArea = ({
   return (
     <div className="my-2 w-full">
       <Flipper flipKey={items} staggerConfig={{ default: { speed: 0.01 } }}>
-        {tempItemsArea}
+        {tempItemsTopArea}
+        {tempItemsBottomArea}
         <div
           className="flex w-full items-end border-2"
           style={{ height: "306px" }}

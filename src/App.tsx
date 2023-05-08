@@ -36,7 +36,8 @@ function App() {
     color: { r: 0, g: 0, b: 0 },
     defaultColor: { r: 0, g: 0, b: 0 },
   });
-  const [tempItems, setTempItems] = useState<SortableItem[][]>([]);
+  const [tempItemsTop, setTempItemsTop] = useState<SortableItem[][]>([]);
+  const [tempItemsBottom, setTempItemsBottom] = useState<SortableItem[][]>([]);
 
   // create array of unique random numbers from 1 to itemSize
   const reset = () => {
@@ -78,7 +79,8 @@ function App() {
       }
     }
     setItems(newItems);
-    setTempItems([newTempItems]);
+    setTempItemsTop([newTempItems]);
+    setTempItemsBottom([newTempItems]);
   };
 
   useEffect(() => {
@@ -105,7 +107,13 @@ function App() {
         await insertionSort(items, setItems, setTempItem, sortSpeed);
         break;
       case "merge":
-        await mergeSort(items, setItems, tempItems, setTempItems, sortSpeed);
+        await mergeSort(
+          items,
+          setItems,
+          setTempItemsTop,
+          setTempItemsBottom,
+          sortSpeed
+        );
         break;
       case "quick":
         await quickSort(items, 0, items.length - 1, setItems, sortSpeed);
@@ -128,7 +136,8 @@ function App() {
             algorithm={algorithm}
             items={items}
             tempItem={tempItem}
-            tempItems={tempItems}
+            tempItemsTop={tempItemsTop}
+            tempItemsBottom={tempItemsBottom}
             reset={reset}
             sorting={sorting}
             setSorting={setSorting}
