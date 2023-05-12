@@ -42,7 +42,6 @@ function App() {
   // create array of unique random numbers from 1 to itemSize
   const reset = () => {
     const newItems: SortableItem[] = [];
-    const newTempItems: SortableItem[] = [];
     const count: number[] = [];
     while (count.length < itemSize) {
       const r = Math.floor(Math.random() * itemSize) + 1;
@@ -62,25 +61,11 @@ function App() {
             b: 200 - r * (200 / itemSize),
           },
         });
-        newTempItems.push({
-          value: itemSize,
-          tone: 240 + r * 4,
-          color: {
-            r: 255,
-            g: 255,
-            b: 255,
-          },
-          defaultColor: {
-            r: 0 + r * (255 / itemSize),
-            g: 0,
-            b: 200 - r * (200 / itemSize),
-          },
-        });
       }
     }
     setItems(newItems);
-    setTempItemsTop([newTempItems]);
-    setTempItemsBottom([newTempItems]);
+    setTempItemsTop([]);
+    setTempItemsBottom([]);
   };
 
   useEffect(() => {
