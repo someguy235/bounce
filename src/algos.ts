@@ -4,7 +4,7 @@ import * as Tone from "tone";
 const synth = new Tone.Synth().toDestination();
 
 const swap = async (
-  items: SortableItem[],
+  items: SortableItem[][],
   i: number,
   j: number,
   setItems: Function,
@@ -13,9 +13,9 @@ const swap = async (
   return new Promise((resolve) => {
     if (i === j) resolve(0);
     setTimeout(() => {
-      const item = items[i];
-      items[i] = items[j];
-      items[j] = item;
+      const item = items[0][i];
+      items[0][i] = items[0][j];
+      items[0][j] = item;
       //   synth.triggerAttackRelease(items[i].tone, "16n");
       setItems([...items]);
       resolve(0);
@@ -42,133 +42,121 @@ const swapTempVal = async (
   });
 };
 
-const splitToTempArrays = async (
-  items: SortableItem[],
+const splitToTempArray = async (
+  items: SortableItem[][],
   setItems: Function,
-  setTempItemsBottom: Function,
+  setTempItems: Function,
   sortSpeed: number
 ): Promise<SortableItem[][]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      console.log("splitToTempArrays");
-      let newTempItemsBottom: SortableItem[][] = [];
-      let newItems: SortableItem[] = [];
-      for (let i = 0; i < items.length; i++) {
-        newTempItemsBottom[i] = [{ ...items[i] }];
-        newItems[i] = {
-          value: 0,
-          tone: 0,
-          color: {
-            r: 0,
-            g: 0,
-            b: 0,
-          },
-          defaultColor: {
-            r: 0,
-            g: 0,
-            b: 0,
-          },
-        };
+      let newTempItems: SortableItem[][] = [];
+      let newItems: SortableItem[][] = [[]];
+
+      for (let i = 0; i < items[0].length; i++) {
+        newTempItems[i] = [{ ...items[0][i] }];
+        newItems[0][i] = { ...globalTempItem };
       }
-      setTempItemsBottom(newTempItemsBottom);
+
+      setTempItems(newTempItems);
       setItems(newItems);
-      resolve(newTempItemsBottom);
+      resolve(newTempItems);
     }, sortSpeed * 3);
   });
 };
 
 const setTempArrays = async (
-  newTempItemsTop: SortableItem[][],
-  newTempItemsBottom: SortableItem[][],
-  setTempItemsTop: Function,
-  setTempItemsBottom: Function,
+  newTempItems: SortableItem[][],
+  newItems: SortableItem[][],
+  setTempItems: Function,
+  setItems: Function,
   sortSpeed: number
 ) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      setTempItemsTop([...newTempItemsTop]);
-      setTempItemsBottom([...newTempItemsBottom]);
+      setTempItems([...newTempItems]);
+      setItems([...newItems]);
       resolve(0);
     }, sortSpeed);
   });
 };
 
 const mergeFromTempArrays = async (
-  tempItemsTop: SortableItem[][],
-  setTempItemsTop: Function,
-  setTempItemsBottom: Function,
+  tempItems: SortableItem[][],
+  setTempItems: Function,
+  setItems: Function,
   sortSpeed: number
 ): Promise<SortableItem[][]> => {
   return new Promise((resolve) => {
     setTimeout(async () => {
-      const oldTempItemsTop = [...tempItemsTop];
-      const newTempItemsTop: SortableItem[][] = [...tempItemsTop];
+      const oldTempItems = [...tempItems];
+      const newTempItems: SortableItem[][] = [...tempItems];
 
-      const newTempItemsBottom: SortableItem[][] = [];
-      for (let i = 0; i < oldTempItemsTop.length; i++) {
-        if (i % 2 == 0) newTempItemsBottom.push([]);
-        for (let j = 0; j < oldTempItemsTop[i].length; j++) {
-          newTempItemsBottom[newTempItemsBottom.length - 1].push({
+      const newItems: SortableItem[][] = [];
+      for (let i = 0; i < oldTempItems.length; i++) {
+        if (i % 2 == 0) newItems.push([]);
+        for (let j = 0; j < oldTempItems[i].length; j++) {
+          newItems[newItems.length - 1].push({
             ...globalTempItem,
           });
         }
       }
-      setTempItemsBottom(newTempItemsBottom);
+      setItems(newItems);
 
       let j = 0;
-      for (let i = 0; i < oldTempItemsTop.length; i += 2) {
+      for (let i = 0; i < oldTempItems.length; i += 2) {
         let k = 0;
-        const aList = [...oldTempItemsTop[i]];
+        const aList = [...oldTempItems[i]];
         const bList =
-          i < oldTempItemsTop.length - 1 ? [...oldTempItemsTop[i + 1]] : [];
+          i < oldTempItems.length - 1 ? [...oldTempItems[i + 1]] : [];
         let a = 0,
           b = 0;
 
         while (a < aList.length && b < bList.length) {
           if (!globalSorting) return;
           if (aList[a].value < bList[b].value) {
-            newTempItemsTop[i][a] = { ...globalTempItem };
-            newTempItemsBottom[j][k++] = aList[a++];
+            newTempItems[i][a] = { ...globalTempItem };
+            newItems[j][k++] = aList[a++];
           } else {
-            newTempItemsTop[i + 1][b] = { ...globalTempItem };
-            newTempItemsBottom[j][k++] = bList[b++];
+            newTempItems[i + 1][b] = { ...globalTempItem };
+            newItems[j][k++] = bList[b++];
           }
           await setTempArrays(
-            newTempItemsTop,
-            newTempItemsBottom,
-            setTempItemsTop,
-            setTempItemsBottom,
+            newTempItems,
+            newItems,
+            setTempItems,
+            setItems,
             sortSpeed
           );
         }
         while (a < aList.length) {
           if (!globalSorting) return;
-          newTempItemsTop[i][a] = { ...globalTempItem };
-          newTempItemsBottom[j][k++] = aList[a++];
+          newTempItems[i][a] = { ...globalTempItem };
+          newItems[j][k++] = aList[a++];
           await setTempArrays(
-            newTempItemsTop,
-            newTempItemsBottom,
-            setTempItemsTop,
-            setTempItemsBottom,
+            newTempItems,
+            newItems,
+            setTempItems,
+            setItems,
             sortSpeed
           );
         }
         while (b < bList.length) {
           if (!globalSorting) return;
-          newTempItemsTop[i + 1][b] = { ...globalTempItem };
-          newTempItemsBottom[j][k++] = bList[b++];
+          newTempItems[i + 1][b] = { ...globalTempItem };
+          newItems[j][k++] = bList[b++];
           await setTempArrays(
-            newTempItemsTop,
-            newTempItemsBottom,
-            setTempItemsTop,
-            setTempItemsBottom,
+            newTempItems,
+            newItems,
+            setTempItems,
+            setItems,
             sortSpeed
           );
         }
         j++;
       }
 
-      resolve(newTempItemsBottom);
+      resolve(newItems);
     }, sortSpeed * 3);
   });
 };
@@ -189,14 +177,15 @@ export const setColor = async (
   });
 };
 
+// TODO: not working after refactor to multi-dimensional array
 export const bubbleSort = async (
-  items: SortableItem[],
+  items: SortableItem[][],
   setItems: Function,
   sortSpeed: number
 ) => {
   for (let i = 0; i < items.length; i++) {
     for (let j = 0; j < items.length - i - 1; j++) {
-      if (items[j].value > items[j + 1].value) {
+      if (items[0][j].value > items[0][j + 1].value) {
         if (!globalSorting) return;
         await swap(items, j, j + 1, setItems, sortSpeed);
       }
@@ -232,47 +221,41 @@ export const insertionSort = async (
   }
 };
 
+// TODO: fix resume after stop
 export const mergeSort = async (
-  items: SortableItem[],
+  items: SortableItem[][],
   setItems: Function,
-  setTempItemsTop: Function,
-  setTempItemsBottom: Function,
+  setTempItems: Function,
   sortSpeed: number
 ) => {
-  let newTempItemsBottom = await splitToTempArrays(
+  let newTempItems = await splitToTempArray(
     items,
     setItems,
-    setTempItemsBottom,
+    setTempItems,
     sortSpeed
   );
 
-  while (newTempItemsBottom.length > 1) {
+  let newItems = await mergeFromTempArrays(
+    newTempItems,
+    setTempItems,
+    setItems,
+    sortSpeed
+  );
+
+  while (newItems.length > 1) {
     if (!globalSorting) return;
 
-    await setTempArrays(
-      newTempItemsBottom,
-      [],
-      setTempItemsTop,
-      setTempItemsBottom,
-      sortSpeed * 3
-    );
+    await setTempArrays(newItems, [], setTempItems, setItems, sortSpeed * 3);
 
-    newTempItemsBottom = await mergeFromTempArrays(
-      newTempItemsBottom,
-      setTempItemsTop,
-      setTempItemsBottom,
+    newItems = await mergeFromTempArrays(
+      newItems,
+      setTempItems,
+      setItems,
       sortSpeed
     );
   }
 
-  await setTempArrays(
-    [],
-    [],
-    setTempItemsTop,
-    setTempItemsBottom,
-    sortSpeed * 3
-  );
-  setItems(newTempItemsBottom[0]);
+  setTempItems([]);
 };
 
 export const quickSort = async (

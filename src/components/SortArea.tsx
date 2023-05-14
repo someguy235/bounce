@@ -4,10 +4,10 @@ import { SortableItem } from "../types/types";
 
 type TempItemAreaProps = {
   algorithm: string;
-  items: SortableItem[];
+  itemSize: number;
   tempItem: SortableItem;
 };
-const TempItemArea = ({ algorithm, items, tempItem }: TempItemAreaProps) => {
+const TempItemArea = ({ algorithm, itemSize, tempItem }: TempItemAreaProps) => {
   if (algorithm !== "insertion") return null;
   return (
     <div className="m-px mr-4 flex flex-1 items-end self-stretch border-l-2 border-r-2 border-dashed">
@@ -15,7 +15,7 @@ const TempItemArea = ({ algorithm, items, tempItem }: TempItemAreaProps) => {
         <span
           key={tempItem.value}
           style={{
-            height: `${tempItem.value * (300 / items.length)}px`,
+            height: `${tempItem.value * (300 / itemSize)}px`,
             display: "inline-block",
             width: "100%",
             backgroundColor: `rgb(${tempItem.color.r}, ${tempItem.color.g}, ${tempItem.color.b})`,
@@ -31,10 +31,14 @@ const TempItemArea = ({ algorithm, items, tempItem }: TempItemAreaProps) => {
 
 type TempItemsAreaProps = {
   algorithm: string;
-  items: SortableItem[];
+  itemSize: number;
   tempItems: SortableItem[][];
 };
-const TempItemsArea = ({ algorithm, items, tempItems }: TempItemsAreaProps) => {
+const TempItemsArea = ({
+  algorithm,
+  itemSize,
+  tempItems,
+}: TempItemsAreaProps) => {
   if (algorithm !== "merge") return null;
   return (
     <div className="flex w-full items-end border-2" style={{ height: "150px" }}>
@@ -48,7 +52,7 @@ const TempItemsArea = ({ algorithm, items, tempItems }: TempItemsAreaProps) => {
               <span
                 className="m-px flex-1"
                 style={{
-                  height: `${item.value * (142 / items.length)}px`,
+                  height: `${item.value * (142 / itemSize)}px`,
                   backgroundColor: `rgb(${item.color.r}, ${item.color.g}, ${item.color.b})`,
                   color: "red",
                 }}
@@ -63,56 +67,26 @@ const TempItemsArea = ({ algorithm, items, tempItems }: TempItemsAreaProps) => {
   );
 };
 
-type SortAreaProps = {
-  algorithm: string;
-  items: SortableItem[];
-  tempItem: SortableItem;
-  tempItemsTop: SortableItem[][];
-  tempItemsBottom: SortableItem[][];
-  reset: Function;
-  sorting: boolean;
-  setSorting: Function;
+type MainItemAreaProps = {
+  items: SortableItem[][];
+  itemSize: number;
 };
-const SortArea = ({
-  algorithm,
-  items,
-  tempItem,
-  tempItemsTop,
-  tempItemsBottom,
-  reset,
-  sorting,
-  setSorting,
-}: SortAreaProps) => {
+const MainItemArea = ({ items, itemSize }: MainItemAreaProps) => {
   return (
-    <div className="my-2 w-full">
-      <Flipper
-        flipKey={tempItemsBottom}
-        staggerConfig={{ default: { speed: 0.01 } }}
-      >
-        <TempItemsArea
-          algorithm={algorithm}
-          items={items}
-          tempItems={tempItemsTop}
-        />
-        <TempItemsArea
-          algorithm={algorithm}
-          items={items}
-          tempItems={tempItemsBottom}
-        />
+    <div className="flex w-full items-end" style={{ height: "300px" }}>
+      {items.map((itemGroup, i) => (
         <div
-          className="flex w-full items-end border-2"
-          style={{ height: "306px" }}
+          className={
+            "flex h-full flex-1 items-end" +
+            (items.length > 1 ? " mx-2  border-2 border-dashed" : "")
+          }
+          key={i}
         >
-          <TempItemArea
-            algorithm={algorithm}
-            items={items}
-            tempItem={tempItem}
-          />
-          {items.map((item, i) => (
-            <Flipped flipId={item.value} key={i}>
+          {itemGroup.map((item, j) => (
+            <Flipped flipId={item.value} key={j}>
               <span
                 style={{
-                  height: `${item.value * (300 / items.length)}px`,
+                  height: `${item.value * (300 / itemSize)}px`,
                   backgroundColor: `rgb(${item.color.r}, ${item.color.g}, ${item.color.b})`,
                   color: "red",
                 }}
@@ -122,6 +96,50 @@ const SortArea = ({
               </span>
             </Flipped>
           ))}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+type SortAreaProps = {
+  algorithm: string;
+  items: SortableItem[][];
+  itemSize: number;
+  tempItem: SortableItem;
+  tempItems: SortableItem[][];
+  reset: Function;
+  sorting: boolean;
+  setSorting: Function;
+};
+const SortArea = ({
+  algorithm,
+  items,
+  itemSize,
+  tempItem,
+  tempItems,
+  reset,
+  sorting,
+  setSorting,
+}: SortAreaProps) => {
+  return (
+    <div className="my-2 w-full">
+      <Flipper flipKey={items} staggerConfig={{ default: { speed: 0.01 } }}>
+        <TempItemsArea
+          algorithm={algorithm}
+          itemSize={itemSize}
+          tempItems={tempItems}
+        />
+        <div
+          className="flex w-full items-end border-2"
+          style={{ height: "306px" }}
+        >
+          <TempItemArea
+            algorithm={algorithm}
+            itemSize={itemSize}
+            tempItem={tempItem}
+          />
+          <MainItemArea items={items} itemSize={itemSize} />
         </div>
       </Flipper>
       <Button m={2} onClick={() => setSorting(true)} isDisabled={sorting}>

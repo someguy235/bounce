@@ -26,7 +26,7 @@ export let globalTempItem: SortableItem = {
 
 function App() {
   const [algorithm, setAlgorithm] = useState("merge");
-  const [items, setItems] = useState<SortableItem[]>([]);
+  const [items, setItems] = useState<SortableItem[][]>([]);
   const [itemSize, setItemSize] = useState(30);
   const [sortSpeed, setSortSpeed] = useState(100);
   const [sorting, setSorting] = useState(false);
@@ -36,18 +36,17 @@ function App() {
     color: { r: 0, g: 0, b: 0 },
     defaultColor: { r: 0, g: 0, b: 0 },
   });
-  const [tempItemsTop, setTempItemsTop] = useState<SortableItem[][]>([]);
-  const [tempItemsBottom, setTempItemsBottom] = useState<SortableItem[][]>([]);
+  const [tempItems, setTempItems] = useState<SortableItem[][]>([]);
 
   // create array of unique random numbers from 1 to itemSize
   const reset = () => {
-    const newItems: SortableItem[] = [];
+    const newItems: SortableItem[][] = [[]];
     const count: number[] = [];
     while (count.length < itemSize) {
       const r = Math.floor(Math.random() * itemSize) + 1;
       if (count.indexOf(r) === -1) {
         count.push(r);
-        newItems.push({
+        newItems[0].push({
           value: r,
           tone: 240 + r * 4,
           color: {
@@ -64,8 +63,7 @@ function App() {
       }
     }
     setItems(newItems);
-    setTempItemsTop([]);
-    setTempItemsBottom([]);
+    setTempItems([]);
   };
 
   useEffect(() => {
@@ -92,13 +90,7 @@ function App() {
         await insertionSort(items, setItems, setTempItem, sortSpeed);
         break;
       case "merge":
-        await mergeSort(
-          items,
-          setItems,
-          setTempItemsTop,
-          setTempItemsBottom,
-          sortSpeed
-        );
+        await mergeSort(items, setItems, setTempItems, sortSpeed);
         break;
       case "quick":
         await quickSort(items, 0, items.length - 1, setItems, sortSpeed);
@@ -120,9 +112,9 @@ function App() {
           <SortArea
             algorithm={algorithm}
             items={items}
+            itemSize={itemSize}
             tempItem={tempItem}
-            tempItemsTop={tempItemsTop}
-            tempItemsBottom={tempItemsBottom}
+            tempItems={tempItems}
             reset={reset}
             sorting={sorting}
             setSorting={setSorting}
