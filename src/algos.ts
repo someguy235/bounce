@@ -77,7 +77,22 @@ const splitToTempArrays = async (
   });
 };
 
-// TODO: work out timing details
+const setTempArrays = async (
+  newTempItemsTop: SortableItem[][],
+  newTempItemsBottom: SortableItem[][],
+  setTempItemsTop: Function,
+  setTempItemsBottom: Function,
+  sortSpeed: number
+) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      setTempItemsTop([...newTempItemsTop]);
+      setTempItemsBottom([...newTempItemsBottom]);
+      resolve(0);
+    }, sortSpeed);
+  });
+};
+
 const mergeFromTempArrays = async (
   tempItemsTop: SortableItem[][],
   setTempItemsTop: Function,
@@ -86,63 +101,72 @@ const mergeFromTempArrays = async (
 ): Promise<SortableItem[][]> => {
   return new Promise((resolve) => {
     setTimeout(async () => {
-      console.log("mergeFromTempArrays");
       const oldTempItemsTop = [...tempItemsTop];
-      const newTempItemsBottom: SortableItem[][] = [];
       const newTempItemsTop: SortableItem[][] = [...tempItemsTop];
+
+      const newTempItemsBottom: SortableItem[][] = [];
+      for (let i = 0; i < oldTempItemsTop.length; i++) {
+        if (i % 2 == 0) newTempItemsBottom.push([]);
+        for (let j = 0; j < oldTempItemsTop[i].length; j++) {
+          newTempItemsBottom[newTempItemsBottom.length - 1].push({
+            ...globalTempItem,
+          });
+        }
+      }
+      setTempItemsBottom(newTempItemsBottom);
 
       let j = 0;
       for (let i = 0; i < oldTempItemsTop.length; i += 2) {
         let k = 0;
-        const aList = oldTempItemsTop[i];
+        const aList = [...oldTempItemsTop[i]];
         const bList =
-          i < oldTempItemsTop.length - 1 ? oldTempItemsTop[i + 1] : [];
+          i < oldTempItemsTop.length - 1 ? [...oldTempItemsTop[i + 1]] : [];
         let a = 0,
           b = 0;
-        newTempItemsBottom.push([]);
-        newTempItemsTop.push([]);
+
         while (a < aList.length && b < bList.length) {
+          if (!globalSorting) return;
           if (aList[a].value < bList[b].value) {
+            newTempItemsTop[i][a] = { ...globalTempItem };
             newTempItemsBottom[j][k++] = aList[a++];
           } else {
+            newTempItemsTop[i + 1][b] = { ...globalTempItem };
             newTempItemsBottom[j][k++] = bList[b++];
           }
-          newTempItemsTop[j][k++] = { ...globalTempItem };
-          await new Promise((resolve) => {
-            setTimeout(() => {
-              setTempItemsTop(newTempItemsTop);
-              setTempItemsBottom(newTempItemsBottom);
-              resolve(0);
-            }, sortSpeed);
-          });
+          await setTempArrays(
+            newTempItemsTop,
+            newTempItemsBottom,
+            setTempItemsTop,
+            setTempItemsBottom,
+            sortSpeed
+          );
         }
         while (a < aList.length) {
+          if (!globalSorting) return;
+          newTempItemsTop[i][a] = { ...globalTempItem };
           newTempItemsBottom[j][k++] = aList[a++];
-          newTempItemsTop[j][k++] = { ...globalTempItem };
-          await new Promise((resolve) => {
-            setTimeout(() => {
-              setTempItemsTop(newTempItemsTop);
-              setTempItemsBottom(newTempItemsBottom);
-              resolve(0);
-            }, sortSpeed);
-          });
+          await setTempArrays(
+            newTempItemsTop,
+            newTempItemsBottom,
+            setTempItemsTop,
+            setTempItemsBottom,
+            sortSpeed
+          );
         }
         while (b < bList.length) {
+          if (!globalSorting) return;
+          newTempItemsTop[i + 1][b] = { ...globalTempItem };
           newTempItemsBottom[j][k++] = bList[b++];
-          newTempItemsTop[j][k++] = { ...globalTempItem };
-          await new Promise((resolve) => {
-            setTimeout(() => {
-              setTempItemsTop(newTempItemsTop);
-              setTempItemsBottom(newTempItemsBottom);
-              resolve(0);
-            }, sortSpeed);
-          });
+          await setTempArrays(
+            newTempItemsTop,
+            newTempItemsBottom,
+            setTempItemsTop,
+            setTempItemsBottom,
+            sortSpeed
+          );
         }
         j++;
       }
-
-      // setTempItemsTop([]);
-      // setTempItemsBottom(newTempItemsBottom);
 
       resolve(newTempItemsBottom);
     }, sortSpeed * 3);
@@ -223,13 +247,15 @@ export const mergeSort = async (
   );
 
   while (newTempItemsBottom.length > 1) {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        setTempItemsBottom([]);
-        setTempItemsTop([...newTempItemsBottom]);
-        resolve(0);
-      }, sortSpeed * 3);
-    });
+    if (!globalSorting) return;
+
+    await setTempArrays(
+      newTempItemsBottom,
+      [],
+      setTempItemsTop,
+      setTempItemsBottom,
+      sortSpeed * 3
+    );
 
     newTempItemsBottom = await mergeFromTempArrays(
       newTempItemsBottom,
@@ -239,13 +265,14 @@ export const mergeSort = async (
     );
   }
 
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      setTempItemsBottom([]);
-      setItems(newTempItemsBottom[0]);
-      resolve(0);
-    }, sortSpeed * 3);
-  });
+  await setTempArrays(
+    [],
+    [],
+    setTempItemsTop,
+    setTempItemsBottom,
+    sortSpeed * 3
+  );
+  setItems(newTempItemsBottom[0]);
 };
 
 export const quickSort = async (
