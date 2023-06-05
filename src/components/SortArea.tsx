@@ -10,7 +10,7 @@ type TempItemAreaProps = {
 const TempItemArea = ({ algorithm, itemSize, tempItem }: TempItemAreaProps) => {
   if (algorithm !== "insertion") return null;
   return (
-    <div className="m-px mr-4 flex flex-1 items-end self-stretch border-l-2 border-r-2 border-dashed">
+    <div className="m-px flex items-end self-stretch border-l-2 border-r-2 border-dashed">
       <Flipped flipId={tempItem.value} key={tempItem.value}>
         <span
           key={tempItem.value}
@@ -122,6 +122,8 @@ const SortArea = ({
   sorting,
   setSorting,
 }: SortAreaProps) => {
+  const templateCols =
+    algorithm === "insertion" ? "1fr " + (itemSize + 1) + "fr" : "1fr";
   return (
     <div className="my-2 w-full">
       <Flipper flipKey={items} staggerConfig={{ default: { speed: 0.01 } }}>
@@ -131,8 +133,11 @@ const SortArea = ({
           tempItems={tempItems}
         />
         <div
-          className="flex w-full items-end border-2"
-          style={{ height: "306px" }}
+          className="grid w-full items-end border-2"
+          style={{
+            height: "306px",
+            gridTemplateColumns: templateCols,
+          }}
         >
           <TempItemArea
             algorithm={algorithm}

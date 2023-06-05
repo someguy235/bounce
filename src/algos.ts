@@ -25,16 +25,16 @@ const swap = async (
 
 const swapTempVal = async (
   position: number,
-  items: SortableItem[],
+  items: SortableItem[][],
   setItems: Function,
   setTempItem: Function,
   sortSpeed: number
 ) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      setTempItem({ ...items[position] });
+      setTempItem({ ...items[0][position] });
 
-      items[position] = <SortableItem>{ ...globalTempItem };
+      items[0][position] = <SortableItem>{ ...globalTempItem };
       setItems([...items]);
 
       resolve(0);
@@ -177,14 +177,13 @@ export const setColor = async (
   });
 };
 
-// TODO: not working after refactor to multi-dimensional array
 export const bubbleSort = async (
   items: SortableItem[][],
   setItems: Function,
   sortSpeed: number
 ) => {
-  for (let i = 0; i < items.length; i++) {
-    for (let j = 0; j < items.length - i - 1; j++) {
+  for (let i = 0; i < items[0].length; i++) {
+    for (let j = 0; j < items[0].length - i - 1; j++) {
       if (items[0][j].value > items[0][j + 1].value) {
         if (!globalSorting) return;
         await swap(items, j, j + 1, setItems, sortSpeed);
@@ -194,21 +193,21 @@ export const bubbleSort = async (
 };
 
 export const insertionSort = async (
-  items: SortableItem[],
+  items: SortableItem[][],
   setItems: Function,
   setTempItem: Function,
   sortSpeed: number
 ) => {
-  if (!items || items.length == 0) return;
-  for (let i = 1; i < items.length; i++) {
+  if (!items || items[0].length == 0) return;
+  for (let i = 1; i < items[0].length; i++) {
     if (!globalSorting) return;
     let j = i - 1;
-    let tempVal = items[i]?.value;
+    let tempVal = items[0][i]?.value;
     if (!tempVal) return;
 
     await swapTempVal(i, items, setItems, setTempItem, sortSpeed);
 
-    while (j >= 0 && items[j]!.value > tempVal) {
+    while (j >= 0 && items[0][j]!.value > tempVal) {
       if (!globalSorting) {
         await swapTempVal(j + 1, items, setItems, setTempItem, sortSpeed);
         return;
@@ -258,6 +257,7 @@ export const mergeSort = async (
   setTempItems([]);
 };
 
+// TODO: not working after refactor to multi-dimensional array
 export const quickSort = async (
   items: SortableItem[],
   start: number,
@@ -291,6 +291,7 @@ export const quickSort = async (
   await quickSort(items, pivotPos + 1, end, setItems, sortSpeed);
 };
 
+// TODO: not working after refactor to multi-dimensional array
 export const selectionSort = async (
   items: SortableItem[],
   setItems: Function,
